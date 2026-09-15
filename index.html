@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accès VIP — Contrôle de Fabulousness</title>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    :root {
+      --bg: #0d0614;
+      --pink: #ff007f;
+      --purple: #8a2be2;
+      --gold: #ffd700;
+    }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: #fff;
+      font-family: 'Segoe UI', Roboto, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .card {
+      background: linear-gradient(145deg, #180928, #280a38);
+      border: 2px solid var(--pink);
+      box-shadow: 0 0 25px rgba(255, 0, 127, 0.4);
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 450px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+    }
+    h1 {
+      color: var(--gold);
+      font-size: 1.5rem;
+      margin-top: 0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .progress-bar {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      height: 12px;
+      margin: 20px 0;
+      overflow: hidden;
+    }
+    .progress-fill {
+      background: linear-gradient(90deg, var(--purple), var(--pink));
+      height: 100%;
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+    .question {
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+      min-height: 50px;
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    button.btn-option {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 0, 127, 0.3);
+      color: #fff;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    button.btn-option:hover {
+      background: var(--pink);
+      border-color: var(--pink);
+      transform: translateY(-2px);
+    }
+    /* Ticket final caché */
+    .ticket-reveal {
+      display: none;
+      animation: fadeIn 1s ease forwards;
+    }
+    .artist {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--gold);
+      text-shadow: 0 0 10px var(--pink);
+      margin: 15px 0;
+    }
+    .details {
+      border-top: 1px dashed rgba(255,255,255,0.3);
+      border-bottom: 1px dashed rgba(255,255,255,0.3);
+      padding: 15px 0;
+      margin: 15px 0;
+      font-size: 0.95rem;
+      text-align: left;
+    }
+    .error-msg {
+      color: #ff4d4d;
+      font-size: 0.85rem;
+      margin-top: 10px;
+      height: 20px;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <!-- Zone Quiz -->
+    <div id="quiz-box">
+      <h1>👑 Contrôle d'Accès VIP 👑</h1>
+      <p style="font-size: 0.85rem; color: #bbb;">Vérification du taux de Fabulousness en cours...</p>
+      
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress"></div>
+      </div>
+
+      <div class="question" id="question-text"></div>
+      <div class="options" id="options-box"></div>
+      <div class="error-msg" id="error-msg"></div>
+    </div>
+
+    <!-- Zone Billet (cachée au départ) -->
+    <div id="ticket-box" class="ticket-reveal">
+      <span style="background: var(--pink); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold;">ACCÈS VALIDÉ (100% FABULOUS)</span>
+      <p style="margin-top: 15px; font-size: 0.9rem;">Tu gagnes 2 places pour aller voir en live :</p>
+      <div class="artist">MAMI WATTA</div>
+      <div class="details">
+        <p style="margin: 6px 0;">📍 <strong>Lieu :</strong> [Nom de la salle]</p>
+        <p style="margin: 6px 0;">📅 <strong>Date :</strong> [Date du spectacle]</p>
+        <p style="margin: 6px 0;">🎟️ <strong>Places :</strong> 2 billets (Toi & Moi !)</p>
+      </div>
+      <p style="font-style: italic; font-size: 0.85rem; color: var(--gold);">Joyeux Noël ! ✨</p>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        q: "1. Quelle est la seule réaction acceptable face à un look légendaire ?",
+        options: [
+          { text: "Un simple hocher de tête discret", correct: false },
+          { text: "Un « SLAY ! » strident accompagné d'un snap de doigts", correct: true },
+          { text: "Dire : « C'est original mais un peu chargé »", correct: false }
+        ]
+      },
+      {
+        q: "2. Si la musique s'arrête en plein spectacle, que fait une vraie Queen ?",
+        options: [
+          { text: "Elle s'excuse et quitte la scène", correct: false },
+          { text: "Elle continue le Lip Sync a cappella sans trembler", correct: true },
+          { text: "Elle demande à repasser plus tard", correct: false }
+        ]
+      },
+      {
+        q: "3. Enfin... avec qui vas-tu passer la meilleure soirée de l'année ?",
+        options: [
+          { text: "Mami Watta... ET MOI !", correct: true },
+          { text: "En solo devant la télé", correct: false }
+        ]
+      }
+    ];
+
+    let currentQ = 0;
+
+    function renderQuestion() {
+      const q = questions[currentQ];
+      document.getElementById('question-text').innerText = q.q;
+      document.getElementById('error-msg').innerText = "";
+      
+      const optionsBox = document.getElementById('options-box');
+      optionsBox.innerHTML = "";
+
+      // Met à jour la barre de progression
+      const progressPercent = (currentQ / questions.length) * 100;
+      document.getElementById('progress').style.width = progressPercent + "%";
+
+      q.options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = "btn-option";
+        btn.innerText = opt.text;
+        btn.onclick = () => handleAnswer(opt.correct);
+        optionsBox.appendChild(btn);
+      });
+    }
+
+    function handleAnswer(isCorrect) {
+      if (isCorrect) {
+        currentQ++;
+        if (currentQ < questions.length) {
+          renderQuestion();
+        } else {
+          showReveal();
+        }
+      } else {
+        document.getElementById('error-msg').innerText = "❌ ERREUR : Pas assez fabulous ! Réessaie.";
+      }
+    }
+
+    function showReveal() {
+      document.getElementById('quiz-box').style.display = 'none';
+      const ticketBox = document.getElementById('ticket-box');
+      ticketBox.style.display = 'block';
+
+      // Confettis
+      confetti({
+        particleCount: 150,
+        spread: 100,
+        origin: { y: 0.6 }
+      });
+    }
+
+    // Lancement
+    renderQuestion();
+  </script>
+</body>
+</html>
