@@ -74,23 +74,44 @@
       font-size: 0.95rem;
       cursor: pointer;
       transition: all 0.2s;
+      text-align: center;
     }
     button.btn-option:hover {
       background: var(--pink);
       border-color: var(--pink);
       transform: translateY(-2px);
     }
+    /* Style pour les petites lignes humoristiques sous l'option Mariah */
+    .btn-disclaimer {
+      display: block;
+      font-size: 0.72rem;
+      margin-top: 6px;
+      opacity: 0.8;
+      font-style: italic;
+      line-height: 1.2;
+      font-weight: normal;
+    }
     /* Ticket final caché */
     .ticket-reveal {
       display: none;
       animation: fadeIn 1s ease forwards;
+    }
+    /* Style pour l'affiche */
+    .poster-img {
+      width: 100%;
+      max-height: 250px;
+      object-fit: contain;
+      border-radius: 10px;
+      border: 1px solid var(--pink);
+      margin: 12px 0;
+      box-shadow: 0 0 15px rgba(255, 0, 127, 0.3);
     }
     .artist {
       font-size: 2.2rem;
       font-weight: 900;
       color: var(--gold);
       text-shadow: 0 0 10px var(--pink);
-      margin: 15px 0;
+      margin: 10px 0;
     }
     .details {
       border-top: 1px dashed rgba(255,255,255,0.3);
@@ -133,6 +154,10 @@
     <div id="ticket-box" class="ticket-reveal">
       <span style="background: var(--pink); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold;">ACCÈS VALIDÉ (100% FABULOUS)</span>
       <p style="margin-top: 15px; font-size: 0.9rem;">Tu gagnes 2 places pour aller voir en live :</p>
+      
+      <!-- Chemin relatif vers ton fichier dans GitHub -->
+      <img src="affiche.jpg" alt="Affiche du spectacle" class="poster-img">
+
       <div class="artist">MAMI WATTA</div>
       <div class="details">
         <p style="margin: 6px 0;">📍 <strong>Lieu :</strong> [Nom de la salle]</p>
@@ -164,8 +189,13 @@
       {
         q: "3. Enfin... avec qui vas-tu passer la meilleure soirée de l'année ?",
         options: [
-          { text: "Mami Watta... ET MOI !", correct: true },
-          { text: "En solo devant la télé", correct: false }
+          { text: "En solo devant la télé", correct: false },
+          { 
+            text: "En compagnie exclusive de Mariah Carey*", 
+            subtext: "*Offre soumise à conditions, dans la limite des Mariah Carey disponibles. Si Mariah n'est pas disponible, un produit toulousain de substitution vous sera fourni.",
+            correct: false 
+          },
+          { text: "Avec toi, évidemment ! ❤️", correct: true }
         ]
       }
     ];
@@ -187,7 +217,13 @@
       q.options.forEach(opt => {
         const btn = document.createElement('button');
         btn.className = "btn-option";
-        btn.innerText = opt.text;
+        
+        if (opt.subtext) {
+          btn.innerHTML = `<div>${opt.text}</div><span class="btn-disclaimer">${opt.subtext}</span>`;
+        } else {
+          btn.innerText = opt.text;
+        }
+
         btn.onclick = () => handleAnswer(opt.correct);
         optionsBox.appendChild(btn);
       });
